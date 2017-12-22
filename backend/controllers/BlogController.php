@@ -32,7 +32,7 @@ class BlogController extends Controller
     }
     public function beforeAction($action)
     {
-        $currentRequestRoute = Yii::$app->requestedRoute;
+        $currentRequestRoute = $action->getUniqueId();
         if (!Yii::$app->user->can('/' . $currentRequestRoute)) {
             throw new \yii\web\ForbiddenHttpException("没权限访问.");
         }
@@ -45,14 +45,20 @@ class BlogController extends Controller
      */
     public function actionIndex()
     {
-
         $searchModel = new BlogSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+
+//        $searchModel = new BlogSearch();
+//        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+//
+//        return $this->render('index', [
+//            'searchModel' => $searchModel,
+//            'dataProvider' => $dataProvider,
+//        ]);
     }
 
     /**

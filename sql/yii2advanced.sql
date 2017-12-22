@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2017-12-21 16:35:06
+Date: 2017-12-22 18:33:11
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -24,14 +24,14 @@ CREATE TABLE `auth_assignment` (
   `user_id` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
   `created_at` int(11) DEFAULT NULL,
   PRIMARY KEY (`item_name`,`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='授权条目对用户的指派情况';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='授权条目对用户的指派情况（用户-角色的关联表）';
 
 -- ----------------------------
 -- Records of auth_assignment
 -- ----------------------------
-INSERT INTO `auth_assignment` VALUES ('用户管理', '1', '1513844589');
+INSERT INTO `auth_assignment` VALUES ('博客管理', '1', '1513938404');
+INSERT INTO `auth_assignment` VALUES ('文章修改', '2', '1513935862');
 INSERT INTO `auth_assignment` VALUES ('超级管理员', '1', '1513844622');
-INSERT INTO `auth_assignment` VALUES ('超级管理员', '2', '1513844637');
 
 -- ----------------------------
 -- Table structure for auth_item
@@ -39,7 +39,7 @@ INSERT INTO `auth_assignment` VALUES ('超级管理员', '2', '1513844637');
 DROP TABLE IF EXISTS `auth_item`;
 CREATE TABLE `auth_item` (
   `name` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
-  `type` smallint(6) NOT NULL,
+  `type` smallint(6) NOT NULL COMMENT 'type=1是角色，type=2是权限和路由（取决于name字段的第一个字符有没有‘/’）',
   `description` text COLLATE utf8_unicode_ci,
   `rule_name` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `data` blob,
@@ -49,7 +49,7 @@ CREATE TABLE `auth_item` (
   KEY `rule_name` (`rule_name`),
   KEY `idx-auth_item-type` (`type`),
   CONSTRAINT `auth_item_ibfk_1` FOREIGN KEY (`rule_name`) REFERENCES `auth_rule` (`name`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='角色和权限';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='角色和权限（用户存储角色、权限、路由）';
 
 -- ----------------------------
 -- Records of auth_item
@@ -116,7 +116,7 @@ INSERT INTO `auth_item` VALUES ('/batch/models', '2', null, null, null, '1487839
 INSERT INTO `auth_item` VALUES ('/blog/*', '2', null, null, null, '1513841490', '1513841490');
 INSERT INTO `auth_item` VALUES ('/blog/create', '2', null, null, null, '1513841490', '1513841490');
 INSERT INTO `auth_item` VALUES ('/blog/delete', '2', null, null, null, '1513841490', '1513841490');
-INSERT INTO `auth_item` VALUES ('/blog/index', '2', null, null, null, '1513841486', '1513841486');
+INSERT INTO `auth_item` VALUES ('/blog/index', '2', '博客列表', null, null, '1513937523', '1513937523');
 INSERT INTO `auth_item` VALUES ('/blog/update', '2', null, null, null, '1513841490', '1513841490');
 INSERT INTO `auth_item` VALUES ('/blog/view', '2', null, null, null, '1513841490', '1513841490');
 INSERT INTO `auth_item` VALUES ('/debug/*', '2', null, null, null, '1487816732', '1487816732');
@@ -147,7 +147,8 @@ INSERT INTO `auth_item` VALUES ('/user-backend/index', '2', null, null, null, '1
 INSERT INTO `auth_item` VALUES ('/user-backend/signup', '2', null, null, null, '1513841490', '1513841490');
 INSERT INTO `auth_item` VALUES ('/user-backend/update', '2', null, null, null, '1513839374', '1513839374');
 INSERT INTO `auth_item` VALUES ('/user-backend/view', '2', null, null, null, '1513839374', '1513839374');
-INSERT INTO `auth_item` VALUES ('用户管理', '2', '用户管理', null, null, '1513839434', '1513839434');
+INSERT INTO `auth_item` VALUES ('博客管理', '1', null, null, null, '1513938113', '1513938113');
+INSERT INTO `auth_item` VALUES ('文章修改', '2', '只针对文章的修改', null, null, '1513839434', '1513935571');
 INSERT INTO `auth_item` VALUES ('超级管理员', '1', null, null, null, '1487817275', '1487817275');
 
 -- ----------------------------
@@ -161,7 +162,7 @@ CREATE TABLE `auth_item_child` (
   KEY `child` (`child`),
   CONSTRAINT `auth_item_child_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `auth_item_child_ibfk_2` FOREIGN KEY (`child`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='授权条目的层次关系';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='授权条目的层次关系（角色-权限的关联表）';
 
 -- ----------------------------
 -- Records of auth_item_child
@@ -224,6 +225,7 @@ INSERT INTO `auth_item_child` VALUES ('超级管理员', '/batch/*');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/batch/cruds');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/batch/index');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/batch/models');
+INSERT INTO `auth_item_child` VALUES ('博客管理', '/blog/index');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/debug/*');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/debug/default/*');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/debug/default/db-explain');
@@ -242,12 +244,13 @@ INSERT INTO `auth_item_child` VALUES ('超级管理员', '/site/*');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/site/error');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/site/index');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/site/login');
+INSERT INTO `auth_item_child` VALUES ('文章修改', '/site/logout');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/site/logout');
-INSERT INTO `auth_item_child` VALUES ('用户管理', '/user-backend/create');
-INSERT INTO `auth_item_child` VALUES ('用户管理', '/user-backend/delete');
-INSERT INTO `auth_item_child` VALUES ('用户管理', '/user-backend/index');
-INSERT INTO `auth_item_child` VALUES ('用户管理', '/user-backend/update');
-INSERT INTO `auth_item_child` VALUES ('用户管理', '/user-backend/view');
+INSERT INTO `auth_item_child` VALUES ('文章修改', '/user-backend/create');
+INSERT INTO `auth_item_child` VALUES ('文章修改', '/user-backend/delete');
+INSERT INTO `auth_item_child` VALUES ('文章修改', '/user-backend/index');
+INSERT INTO `auth_item_child` VALUES ('文章修改', '/user-backend/update');
+INSERT INTO `auth_item_child` VALUES ('文章修改', '/user-backend/view');
 
 -- ----------------------------
 -- Table structure for auth_rule
@@ -391,5 +394,5 @@ CREATE TABLE `user_backend` (
 -- ----------------------------
 -- Records of user_backend
 -- ----------------------------
-INSERT INTO `user_backend` VALUES ('1', 'test1', '8yXsAgqt6V5ZqxzdWY5ShQMYMIxG6QRW', '$2y$13$Tbg8MyIdpfLw84yVtbxwF.Uj1L3dFQaUMdWM2p9aBC35c2iYQufQe', '2689182194@qq.com', '2017-08-21 08:46:46', '2017-08-21 08:46:46');
+INSERT INTO `user_backend` VALUES ('1', 'test1', '8yXsAgqt6V5ZqxzdWY5ShQMYMIxG6QRW', '$2y$13$Tbg8MyIdpfLw84yVtbxwF.Uj1L3dFQaUMdWM2p9aBC35c2iYQufQe', '2689182194@qq.com', '2017-08-21 08:46:46', '2017-08-21 08:46:47');
 INSERT INTO `user_backend` VALUES ('2', 'test2', 'T7fu2Pc_tZygfCpf9xW7bzF4-9v3Fmjq', '$2y$13$lV85aWfHqsm3woHEvLH.o.l3r6qPgWVUgSvyjyNjeASv4nchtScme', '1963047941@qq.com', '2017-08-22 07:53:29', '2017-08-22 07:53:29');
