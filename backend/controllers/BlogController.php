@@ -21,7 +21,12 @@ class BlogController extends Controller
     public function behaviors()
     {
         return [
-            //'myBehavior'=>MyBehavior::className(),
+            //附加行为
+            // 'myBehavior' => \backend\components\MyBehavior::className(),
+            'as access' => [
+                'class' => 'backend\components\AccessControl',
+            ],
+            //'myBehavior' => MyBehavior::className(),
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -30,8 +35,10 @@ class BlogController extends Controller
             ],
         ];
     }
+
     public function beforeAction($action)
     {
+        parent::beforeAction($action);
         $currentRequestRoute = $action->getUniqueId();
         if (!Yii::$app->user->can('/' . $currentRequestRoute)) {
             throw new \yii\web\ForbiddenHttpException("没权限访问.");
@@ -39,12 +46,19 @@ class BlogController extends Controller
 
         return true;
     }
+
     /**
      * Lists all Blog models.
      * @return mixed
      */
     public function actionIndex()
     {
+//        $myBehavior = $this->getBehavior('myBehavior');
+//        $isGuest = $myBehavior->isGuest();
+//        var_dump($isGuest);
+//        //或者也可以直接这样调用
+//        $isGuest = $this->isGuest();
+//        var_dump($isGuest);
         $searchModel = new BlogSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('index', [

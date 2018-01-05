@@ -18,4 +18,8 @@ class MyBehavior extends ActionFilter
         var_dump(111);
         return true;
     }
+    public function isGuest ()
+    {
+        return Yii::$app->user->isGuest;
+    }
 }

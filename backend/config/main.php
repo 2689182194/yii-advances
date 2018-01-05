@@ -86,6 +86,7 @@ return [
         ],
         */
     ],
+    //'as myBehavior2' => backend\components\MyBehavior::className(),
     'params' => $params,
     //严重警告！！！as access位置不要添加错了，已经不少同学都掉坑里了！！！
     'as access' => [

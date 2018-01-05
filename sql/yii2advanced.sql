@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2017-12-22 18:33:11
+Date: 2018-01-05 18:30:19
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -113,12 +113,11 @@ INSERT INTO `auth_item` VALUES ('/batch/*', '2', null, null, null, '1487839853',
 INSERT INTO `auth_item` VALUES ('/batch/cruds', '2', null, null, null, '1487839853', '1487839853');
 INSERT INTO `auth_item` VALUES ('/batch/index', '2', null, null, null, '1487839853', '1487839853');
 INSERT INTO `auth_item` VALUES ('/batch/models', '2', null, null, null, '1487839853', '1487839853');
-INSERT INTO `auth_item` VALUES ('/blog/*', '2', null, null, null, '1513841490', '1513841490');
-INSERT INTO `auth_item` VALUES ('/blog/create', '2', null, null, null, '1513841490', '1513841490');
-INSERT INTO `auth_item` VALUES ('/blog/delete', '2', null, null, null, '1513841490', '1513841490');
+INSERT INTO `auth_item` VALUES ('/blog/create', '2', null, null, null, '1515147084', '1515147084');
+INSERT INTO `auth_item` VALUES ('/blog/delete', '2', null, null, null, '1515147084', '1515147084');
 INSERT INTO `auth_item` VALUES ('/blog/index', '2', '博客列表', null, null, '1513937523', '1513937523');
-INSERT INTO `auth_item` VALUES ('/blog/update', '2', null, null, null, '1513841490', '1513841490');
-INSERT INTO `auth_item` VALUES ('/blog/view', '2', null, null, null, '1513841490', '1513841490');
+INSERT INTO `auth_item` VALUES ('/blog/update', '2', null, null, null, '1515147084', '1515147084');
+INSERT INTO `auth_item` VALUES ('/blog/view', '2', null, null, null, '1515147084', '1515147084');
 INSERT INTO `auth_item` VALUES ('/debug/*', '2', null, null, null, '1487816732', '1487816732');
 INSERT INTO `auth_item` VALUES ('/debug/default/*', '2', null, null, null, '1487816732', '1487816732');
 INSERT INTO `auth_item` VALUES ('/debug/default/db-explain', '2', null, null, null, '1487816732', '1487816732');
@@ -225,7 +224,11 @@ INSERT INTO `auth_item_child` VALUES ('超级管理员', '/batch/*');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/batch/cruds');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/batch/index');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/batch/models');
+INSERT INTO `auth_item_child` VALUES ('博客管理', '/blog/create');
+INSERT INTO `auth_item_child` VALUES ('博客管理', '/blog/delete');
 INSERT INTO `auth_item_child` VALUES ('博客管理', '/blog/index');
+INSERT INTO `auth_item_child` VALUES ('博客管理', '/blog/update');
+INSERT INTO `auth_item_child` VALUES ('博客管理', '/blog/view');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/debug/*');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/debug/default/*');
 INSERT INTO `auth_item_child` VALUES ('超级管理员', '/debug/default/db-explain');
